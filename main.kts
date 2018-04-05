@@ -30,8 +30,67 @@ fun mathOp (x: Int, y: Int, f : (Int, Int) -> Int) : Int {
     return f(x, y);
 }
 // write a class "Person" with first name, last name and age
+class Person (f: String, l: String, a: Int) {
+    var firstName : String
+    var lastName : String
+    var age: Int
+    
+    val debugString : String
+        get() = "[Person firstName:" + this.firstName + " lastName:" + this.lastName + " age:" + this.age + "]";
+
+    init {
+        firstName = f
+        lastName = l
+        age = a
+    }
+
+    fun equals(p : Person) : Boolean {
+        return this.firstName == p.firstName && this.lastName == p.lastName && this.age == p.age;
+    }
+
+    override fun hashCode() : Int {
+        return this.firstName.hashCode() + this.lastName.hashCode() * 31;
+    }
+}
 
 // write a class "Money"
+class Money (a: Int, c : String){
+    var amount : Int
+    var currency : String
+
+    init {
+        if (a >= 0){
+            amount = a;
+        } else throw AssertionError("Amount < 0");
+
+        if (c == "USD" || c == "CAN" || c == "EUR" || c == "GBP"){ 
+            currency = c;
+        } else throw AssertionError("Invalid Currency");
+    }
+
+    fun convert (cur : String) : Money {
+        var temp  : Int = 0;
+
+        when (this.currency) {
+            "USD" -> temp = amount
+            "EUR" -> temp = (amount * 10) / 15;
+            "CAN" -> temp = (amount * 12) / 15
+            "GBP" -> temp = (amount * 10) / 5
+        }
+
+        when (cur) {
+            "EUR" -> temp = (temp * 15) / 10
+            "CAN" -> temp = (temp * 15) / 12
+            "GBP" -> temp = (temp * 5) / 10
+        }
+
+        return Money(temp, cur);
+    }
+
+    operator fun plus(x : Money) : Money {
+        return Money(this.amount + x.convert(this.currency).amount, this.currency);
+    }
+}
 
 // ============ DO NOT EDIT BELOW THIS LINE =============
 
@@ -82,7 +141,7 @@ print(if (mathOp(2, 2, ::sub ) == 0) "." else "!")
 print(if (mathOp(2, 2, { l,r -> l*r} ) == 4) "." else "!")
 println("")
 
-/*
+
 print("Person tests: ")
 val p1 = Person("Ted", "Neward", 47)
 print(if (p1.firstName == "Ted") "." else "!")
@@ -116,4 +175,4 @@ for ( (pair, result) in moneyadd_tests) {
     print(if ((pair.first + pair.second).amount == result.amount &&
               (pair.first + pair.second).currency == result.currency) "." else "!")
 }
-println("")*/
+println("")
